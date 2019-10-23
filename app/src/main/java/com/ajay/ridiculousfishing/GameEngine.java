@@ -49,6 +49,10 @@ public class GameEngine extends SurfaceView implements Runnable {
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
 
+    public ArrayList<Fish> goodFishesArray = new ArrayList<Fish>();
+
+    public ArrayList<Fish> badFishesArray = new ArrayList<Fish>();
+
     // ----------------------------
     // ## SPRITES
     // ----------------------------
@@ -76,7 +80,24 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
-        this.goodFish = new Fish(context,this.screenWidth,this.bgYPosition,R.drawable.fish1);
+        int fishXPos = 0;
+        int goodFishYPos = this.bgYPosition;
+        for (int i = 0; i < 6; i++) {
+            this.goodFishesArray.add(new Fish(context, fishXPos, goodFishYPos, R.drawable.fish1));
+            if (fishXPos == 0) {
+                fishXPos = this.screenWidth - this.goodFishesArray.get(i).getImage().getWidth();
+            } else if (fishXPos != 0) {
+                fishXPos = 0;
+            }
+            goodFishYPos = goodFishYPos + this.screenHeight / 5;
+
+            if (i % 2 == 0) {
+                int badFishYPos = goodFishYPos + this.goodFishesArray.get(i).getImage().getHeight()*2;
+                this.badFishesArray.add(new Fish(context, fishXPos, badFishYPos, R.drawable.fish3));
+            }
+
+
+        }
 
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
@@ -140,18 +161,73 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
     public void updatePositions() {
+        //int goodFishYPos = this.bgYPosition;
+if (this.goodFishesArray.size() != 0) {
+    for (int i = 0; i < goodFishesArray.size(); i++) {
+        this.goodFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 20);
+        this.goodFishesArray.get(i).setyPosition(this.goodFishesArray.get(i).getyPosition() - 30);
+        //this.badFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 25);
 
-
-        this.goodFish.setxPosition(this.goodFish.getxPosition()-20);
-
-        if(this.goodFish.getxPosition()<=(0-this.goodFish.getImage().getWidth())){
-            this.goodFish.setxPosition(this.screenWidth);
-            this.goodFish.setyPosition(800);
+        if (this.goodFishesArray.get(i).getxPosition() <= (0 - this.goodFishesArray.get(i).getImage().getWidth())) {
+            this.goodFishesArray.get(i).setxPosition(this.screenWidth);
+            //this.goodFishesArray.get(i).setyPosition(800);
         }
+    }
+}
+        if (this.badFishesArray.size() != 0) {
+            for (int i  = 0; i<badFishesArray.size();i++){
+                this.badFishesArray.get(i).setxPosition(this.badFishesArray.get(i).getxPosition() - 10);
+                this.badFishesArray.get(i).setyPosition(this.badFishesArray.get(i).getyPosition() - 30);
+         if (this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth())) {
+            this.badFishesArray.get(i).setxPosition(this.screenWidth);
+            //this.badFishesArray.get(i).setyPosition(1500);
+        }
+    }
+}
+
+
 
         this.moveBackground();
-        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
+        //this.spawnFish();
+//        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
     }
+
+    public void spawnFish() {
+
+        if (this.fishesArray.size() < 3) {
+
+            this.random = new Random();
+
+            //creating an array of X coordinates where the fish would be randomly positioned/located.
+            int[] intArray = {this.screenWidth, 0};
+
+            //getting a random number from intArray
+            int rnd = random.nextInt(intArray.length);
+
+            //creating a array of Fish objects from which a random object would be selected
+            Fish[] objectArray = {this.goodFish, this.badFish};
+
+            //getting a random number from 0 to 2
+            int rand = this.random.nextInt(objectArray.length);
+
+            // adding a random object to Array List of Objects
+            this.fishesArray.add(objectArray[rand]);
+
+            // setting X and Y Coordinates of random object.
+            for (int i = 0; i < fishesArray.size(); i++) {
+                if (i == 1) {
+                    this.fishesArray.get(i).setxPosition(intArray[rnd]);
+                    this.fishesArray.get(i).setyPosition(400);
+                } else if ((i != 1)&&(i != 0)) {
+                    Fish prevFish = fishesArray.get(i-1);
+                    this.fishesArray.get(i).setxPosition(intArray[rnd]);
+                    this.fishesArray.get(i).setyPosition(prevFish.getyPosition() + 100);
+                }
+            }
+
+        }
+    }
+
 
     public void moveBackground(){
         this.skyBgYPos = this.skyBgYPos - 10;
@@ -187,9 +263,21 @@ public class GameEngine extends SurfaceView implements Runnable {
             paintbrush.setColor(Color.BLUE);
             paintbrush.setStyle(Paint.Style.STROKE);
             paintbrush.setStrokeWidth(5);
-            
-            canvas.drawBitmap(goodFish.getImage(), this.goodFish.getxPosition(),this.goodFish.getyPosition(),paintbrush);
 
+            //canvas.drawBitmap(goodFish.getImage(), this.goodFish.getxPosition(),this.goodFish.getyPosition(),paintbrush);
+            //canvas.drawBitmap(badFish.getImage(), this.badFish.getxPosition(),this.badFish.getyPosition(),paintbrush);
+
+            int count = 0;
+            for (int i = 0; i < this.goodFishesArray.size(); i++) {
+                this.canvas.drawBitmap(this.goodFishesArray.get(i).getImage(), this.goodFishesArray.get(i).getxPosition(), this.goodFishesArray.get(i).getyPosition(), paintbrush);
+//                this.canvas.drawBitmap(this.badFishesArray.get(i).getImage(), this.badFishesArray.get(i).getxPosition(), this.badFishesArray.get(i).getyPosition(), paintbrush);
+                count = count + 1;
+            }
+            for (int i = 0; i < this.badFishesArray.size(); i++) {
+                this.canvas.drawBitmap(this.badFishesArray.get(i).getImage(), this.badFishesArray.get(i).getxPosition(), this.badFishesArray.get(i).getyPosition(), paintbrush);
+                count = count + 1;
+            }
+            System.out.println("no.of fishes: " +count);
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
         }
