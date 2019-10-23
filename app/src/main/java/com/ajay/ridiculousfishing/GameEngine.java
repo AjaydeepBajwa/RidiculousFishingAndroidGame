@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class GameEngine extends SurfaceView implements Runnable {
@@ -43,12 +44,22 @@ public class GameEngine extends SurfaceView implements Runnable {
     int skyBgYPos = 0;
     int bgYPosition;
     int bg2YPosition;
+    //int fishXPos;
+    //int fishYPos;
+    Random random;
+    public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
+
     // ----------------------------
     // ## SPRITES
     // ----------------------------
 
     Bitmap skyBackground;
     Bitmap background;
+
+    Fish goodFish;
+    Fish rareFish;
+    Fish badFish;
+
     // represent the TOP LEFT CORNER OF THE GRAPHIC
 
     // ----------------------------
@@ -65,6 +76,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
+        this.goodFish = new Fish(context,this.screenWidth,this.bgYPosition,R.drawable.fish1);
+
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
 
@@ -79,8 +92,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight*2, false);
 
         this.bgYPosition = this.skyBackground.getHeight();
-        //this.bg2YPosition = this.background.getHeight();
-        this.bg2YPosition = this.bgYPosition;
+        this.bg2YPosition = this.bgYPosition + this.background.getHeight();
+
         this.printScreenInfo();
     }
 
@@ -91,15 +104,6 @@ public class GameEngine extends SurfaceView implements Runnable {
         Log.d(TAG, "Screen (w, h) = " + this.screenWidth + "," + this.screenHeight);
     }
 
-    private void spawnPlayer() {
-        //@TODO: Start the player at the left side of screen
-    }
-    private void spawnEnemyShips() {
-        Random random = new Random();
-
-        //@TODO: Place the enemies in a random location
-
-    }
 
     // ------------------------------
     // GAME STATE FUNCTIONS (run, stop, start)
@@ -137,11 +141,24 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public void updatePositions() {
 
+
+        this.goodFish.setxPosition(this.goodFish.getxPosition()-20);
+
+        if(this.goodFish.getxPosition()<=(0-this.goodFish.getImage().getWidth())){
+            this.goodFish.setxPosition(this.screenWidth);
+            this.goodFish.setyPosition(800);
+        }
+
+        this.moveBackground();
+        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
+    }
+
+    public void moveBackground(){
         this.skyBgYPos = this.skyBgYPos - 10;
         this.bgYPosition = this.bgYPosition - 30;
         this.bg2YPosition = this.bg2YPosition - 30;
 
-        //this.bgXPosition = this.bgXPosition + this.background.getWidth();
+
         if ((this.bgYPosition + this.background.getHeight())<=0){
             this.bgYPosition = this.bg2YPosition+this.background.getHeight();
         }
@@ -170,6 +187,8 @@ public class GameEngine extends SurfaceView implements Runnable {
             paintbrush.setColor(Color.BLUE);
             paintbrush.setStyle(Paint.Style.STROKE);
             paintbrush.setStrokeWidth(5);
+            
+            canvas.drawBitmap(goodFish.getImage(), this.goodFish.getxPosition(),this.goodFish.getyPosition(),paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
