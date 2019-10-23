@@ -1,6 +1,8 @@
 package com.ajay.ridiculousfishing;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -34,6 +36,25 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
 
+    // -----------------------------------
+    // GAME SPECIFIC VARIABLES
+    // -----------------------------------
+
+    int skyBgYPos = 0;
+    int bgYPosition;
+    int bg2YPosition;
+    // ----------------------------
+    // ## SPRITES
+    // ----------------------------
+
+    Bitmap skyBackground;
+    Bitmap background;
+    // represent the TOP LEFT CORNER OF THE GRAPHIC
+
+    // ----------------------------
+    // ## GAME STATS
+    // ----------------------------
+
 
     public GameEngine(Context context, int w, int h) {
         super(context);
@@ -44,6 +65,21 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
+        this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
+        System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
+
+        this.skyBackground = Bitmap.createScaledBitmap(this.skyBackground, this.screenWidth, this.screenHeight, false);
+
+
+        this.bgYPosition = this.skyBackground.getHeight();
+        //setup background
+        this.background = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water);
+        System.out.println("image widtth is :"+this.background.getWidth()+"");
+
+        this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight*2, false);
+
+        this.bgYPosition = this.skyBackground.getHeight();
+        this.bg2YPosition = this.background.getHeight();
         this.printScreenInfo();
     }
 
@@ -56,6 +92,12 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     private void spawnPlayer() {
         //@TODO: Start the player at the left side of screen
+    }
+    private void spawnEnemyShips() {
+        Random random = new Random();
+
+        //@TODO: Place the enemies in a random location
+
     }
 
     // ------------------------------
@@ -93,6 +135,18 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
     public void updatePositions() {
+
+        this.skyBgYPos = this.skyBgYPos - 10;
+        this.bgYPosition = this.bgYPosition - 15;
+        this.bg2YPosition = this.bg2YPosition - 15;
+
+        //this.bgXPosition = this.bgXPosition + this.background.getWidth();
+        if ((this.bgYPosition + this.background.getHeight())<=0){
+            this.bgYPosition = this.bg2YPosition+this.background.getHeight();
+        }
+        if ((this.bg2YPosition + this.background.getHeight())<=0){
+            this.bg2YPosition = this.bgYPosition + this.background.getHeight();
+        }
     }
 
     public void redrawSprites() {
@@ -104,6 +158,9 @@ public class GameEngine extends SurfaceView implements Runnable {
             // configure the drawing tools
             this.canvas.drawColor(Color.argb(255,255,255,255));
             paintbrush.setColor(Color.WHITE);
+            canvas.drawBitmap(this.skyBackground,0,skyBgYPos,paintbrush);
+            canvas.drawBitmap(this.background,0,this.bgYPosition,paintbrush);
+            canvas.drawBitmap(this.background,0,this.bg2YPosition,paintbrush);
 
 
             // DRAW THE PLAYER HITBOX
@@ -120,10 +177,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public void setFPS() {
         try {
-            gameThread.sleep(120);
+            gameThread.sleep(1);
         }
         catch (Exception e) {
-
         }
     }
 
