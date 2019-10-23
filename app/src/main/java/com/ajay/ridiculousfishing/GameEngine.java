@@ -79,7 +79,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight*2, false);
 
         this.bgYPosition = this.skyBackground.getHeight();
-        this.bg2YPosition = this.background.getHeight();
+        //this.bg2YPosition = this.background.getHeight();
+        this.bg2YPosition = this.bgYPosition;
         this.printScreenInfo();
     }
 
@@ -137,8 +138,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void updatePositions() {
 
         this.skyBgYPos = this.skyBgYPos - 10;
-        this.bgYPosition = this.bgYPosition - 15;
-        this.bg2YPosition = this.bg2YPosition - 15;
+        this.bgYPosition = this.bgYPosition - 30;
+        this.bg2YPosition = this.bg2YPosition - 30;
 
         //this.bgXPosition = this.bgXPosition + this.background.getWidth();
         if ((this.bgYPosition + this.background.getHeight())<=0){

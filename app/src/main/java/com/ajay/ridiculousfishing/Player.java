@@ -15,7 +15,7 @@ public class Player {
     private int yPosition;
 
     public Player(Context context, int x, int y) {
-        // 1. set up the initial position of the Enemy
+        // 1. set up the initial position of the Fish
         this.xPosition = x;
         this.yPosition = y;
 
