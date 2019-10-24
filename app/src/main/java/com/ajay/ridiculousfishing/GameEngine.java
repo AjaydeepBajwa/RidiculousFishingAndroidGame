@@ -41,6 +41,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // GAME SPECIFIC VARIABLES
     // -----------------------------------
 
+    int updateCount = 0;
     int skyBgYPos = 0;
     int bgYPosition;
     int bg2YPosition;
@@ -80,26 +81,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.screenWidth = w;
         this.screenHeight = h;
-
-//        int fishXPos = 0;
-//        int goodFishYPos = this.bgYPosition;
-//        for (int i = 0; i < 6; i++) {
-//            this.goodFishesArray.add(new Fish(context, fishXPos, goodFishYPos, R.drawable.fish1));
-//            if (fishXPos == 0) {
-//                fishXPos = this.screenWidth - this.goodFishesArray.get(i).getImage().getWidth();
-//            } else if (fishXPos != 0) {
-//                fishXPos = 0;
-//            }
-//            goodFishYPos = goodFishYPos + this.screenHeight / 5;
-//
-//            if (i % 2 == 0) {
-//                int badFishYPos = goodFishYPos + this.goodFishesArray.get(i).getImage().getHeight()*2;
-//                this.badFishesArray.add(new Fish(context, fishXPos, badFishYPos, R.drawable.fish3));
-//            }
-//
-//
-//        }
-        this.spwnFish();
+        
 
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
@@ -136,8 +118,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     @Override
     public void run() {
         while (gameIsRunning == true) {
-            this.updatePositions();
             this.redrawSprites();
+            this.updatePositions();
             this.setFPS();
         }
     }
@@ -165,6 +147,12 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
     public void updatePositions() {
+
+//        if (this.gameStarted == false){
+//            this.startScreen();
+//        }
+//        else{
+
         //int goodFishYPos = this.bgYPosition;
 if (this.goodFishesArray.size() != 0) {
     for (int i = 0; i < goodFishesArray.size(); i++) {
@@ -179,34 +167,38 @@ if (this.goodFishesArray.size() != 0) {
     }
 }
         if (this.badFishesArray.size() != 0) {
-            for (int i  = 0; i<badFishesArray.size();i++){
+            for (int i = 0; i < badFishesArray.size(); i++) {
                 this.badFishesArray.get(i).setxPosition(this.badFishesArray.get(i).getxPosition() - 10);
                 //this.badFishesArray.get(i).setyPosition(this.badFishesArray.get(i).getyPosition() - 30);
-         if (this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth())) {
-            this.badFishesArray.get(i).setxPosition(this.screenWidth);
-            //this.badFishesArray.get(i).setyPosition(1500);
+                if (this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth())) {
+                    this.badFishesArray.get(i).setxPosition(this.screenWidth);
+                    //this.badFishesArray.get(i).setyPosition(1500);
+                }
+
+            }
         }
 
-    }
-}
 
 
         this.moveBackground();
-        this.removeFish();
-        this.spwnFish();
+        if(this.updateCount >= 70) {
+            this.removeFish();
+            this.spwnFish();
 //        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
+        }
+        this.updateCount = this.updateCount + 1;
     }
 
     public void spwnFish(){
         if (this.goodFishesArray.size() + this.badFishesArray.size() < 8){
-            int fishXPos = 0;
+            int fishXPos = 0 - 200;
             int goodFishYPos = this.bgYPosition;
             for (int i = 0; i < 6; i++) {
                 this.goodFishesArray.add(new Fish(this.getContext(), fishXPos, goodFishYPos, R.drawable.fish1));
-                if (fishXPos == 0) {
+                if (fishXPos == 0-200) {
                     fishXPos = this.screenWidth - this.goodFishesArray.get(i).getImage().getWidth();
                 } else if (fishXPos != 0) {
-                    fishXPos = 0;
+                    fishXPos = 0 - 200;
                 }
                 goodFishYPos = goodFishYPos + this.screenHeight / 5;
 
@@ -324,7 +316,7 @@ if (this.goodFishesArray.size() != 0) {
                 count = count + 1;
             }
             System.out.println("no.of fishes: " +count);
-            canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
+           // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
         }
@@ -350,10 +342,10 @@ if (this.goodFishesArray.size() != 0) {
         int userAction = event.getActionMasked();
         //@TODO: What should happen when person touches the screen?
         if (userAction == MotionEvent.ACTION_DOWN) {
-
+            this.fingerAction = "tapped";
         }
         else if (userAction == MotionEvent.ACTION_UP) {
-
+            this.fingerAction = "untapped";
         }
 
         return true;

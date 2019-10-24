@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the GameEngine object
         // Pass it the screen size (height & width)
-        ridiculousFishing = new GameEngine(this, size.x, size.y);
+      ridiculousFishing = new GameEngine(this, size.x, size.y);
+//
+//        // Make GameEngine the view of the Activity
+        setContentView(R.layout.activity_main);
+    }
+    public void startGame(View view){
+//        ridiculousFishing = new GameEngine(this, size.x, size.y);
 
         // Make GameEngine the view of the Activity
         setContentView(ridiculousFishing);
