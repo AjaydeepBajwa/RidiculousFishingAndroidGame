@@ -212,6 +212,8 @@ if (this.goodFishesArray.size() != 0) {
     public void moveHook(){
         if ((this.fingerAction == "tapped")||(this.fingerAction == "moving")){
             this.lineEndX = this.mouseX;
+            this.hook.setxPosition(this.mouseX);
+            //this.hook.getxPosition() = this.mouseX;
             //this.lineEndY = this.mouseY;
         }
     }
