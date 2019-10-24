@@ -50,9 +50,14 @@ public class GameEngine extends SurfaceView implements Runnable {
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
 
+    public ArrayList<Fish> rarefishesArray = new ArrayList<Fish>();
+
     public ArrayList<Fish> goodFishesArray = new ArrayList<Fish>();
 
     public ArrayList<Fish> badFishesArray = new ArrayList<Fish>();
+
+    float lineEndX;
+    float lineEndY;
 
     // ----------------------------
     // ## SPRITES
@@ -61,6 +66,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     Bitmap skyBackground;
     Bitmap background;
     Bitmap fisherMan;
+    Bitmap hook;
 
     Fish goodFish;
     Fish rareFish;
@@ -81,7 +87,10 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.screenWidth = w;
         this.screenHeight = h;
-        
+
+        this.lineEndX = this.screenWidth/2;
+        this.lineEndY = this.screenHeight/2;
+
 
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
@@ -90,6 +99,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.fisherMan = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fisherman);
         this.fisherMan = Bitmap.createScaledBitmap(this.fisherMan,this.screenWidth*3/4,this.screenHeight/3,false);
+
+        this.hook = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.hook);
+        //this.hook = Bitmap.createScaledBitmap(this.hook)
 
         this.bgYPosition = this.skyBackground.getHeight();
         //setup background
@@ -210,6 +222,10 @@ if (this.goodFishesArray.size() != 0) {
                 System.out.println("Total arrays(both) size : " + (this.goodFishesArray.size() + this.badFishesArray.size()));
 
             }
+            int rareFishX = -200;
+            if (this.updateCount%100 == 0){
+                this.rarefishesArray.add(new Fish(this.getContext(), rareFishX, goodFishYPos, R.drawable.rare_fish));
+            }
         }
     }
 
@@ -281,6 +297,7 @@ if (this.goodFishesArray.size() != 0) {
         }
     }
 
+
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
             this.canvas = this.holder.lockCanvas();
@@ -298,9 +315,9 @@ if (this.goodFishesArray.size() != 0) {
             // DRAW THE PLAYER HITBOX
             // ------------------------
             // 1. change the paintbrush settings so we can see the hitbox
-            paintbrush.setColor(Color.BLUE);
+            paintbrush.setColor(Color.BLACK);
             paintbrush.setStyle(Paint.Style.STROKE);
-            paintbrush.setStrokeWidth(5);
+            paintbrush.setStrokeWidth(3);
 
             //canvas.drawBitmap(goodFish.getImage(), this.goodFish.getxPosition(),this.goodFish.getyPosition(),paintbrush);
             //canvas.drawBitmap(badFish.getImage(), this.badFish.getxPosition(),this.badFish.getyPosition(),paintbrush);
@@ -317,6 +334,9 @@ if (this.goodFishesArray.size() != 0) {
             }
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
+            canvas.drawLine(this.screenWidth/2,0,this.lineEndX,this.lineEndY,paintbrush);
+            canvas.drawBitmap(this.hook,this.lineEndX - this.hook.getWidth()/2 - 20,this.lineEndY - 10,paintbrush);
+
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
         }
@@ -324,7 +344,7 @@ if (this.goodFishesArray.size() != 0) {
 
     public void setFPS() {
         try {
-            gameThread.sleep(1);
+            gameThread.sleep(2);
         }
         catch (Exception e) {
         }
