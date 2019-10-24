@@ -14,6 +14,8 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static java.lang.Integer.parseInt;
+
 public class GameEngine extends SurfaceView implements Runnable {
 
     // Android debug variables
@@ -69,7 +71,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     Bitmap skyBackground;
     Bitmap background;
     Bitmap fisherMan;
-    Bitmap hook;
+    //Bitmap hook;
+
+    Hook hook;
 
     Fish goodFish;
     Fish rareFish;
@@ -103,7 +107,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.fisherMan = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fisherman);
         this.fisherMan = Bitmap.createScaledBitmap(this.fisherMan,this.screenWidth*3/4,this.screenHeight/3,false);
 
-        this.hook = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.hook);
+        this.hook = new Hook(this.getContext(),this.lineEndX,this.lineEndY);
         //this.hook = Bitmap.createScaledBitmap(this.hook)
 
         this.bgYPosition = this.skyBackground.getHeight();
@@ -208,8 +212,12 @@ if (this.goodFishesArray.size() != 0) {
     public void moveHook(){
         if ((this.fingerAction == "tapped")||(this.fingerAction == "moving")){
             this.lineEndX = this.mouseX;
-            this.lineEndY = this.mouseY;
+            //this.lineEndY = this.mouseY;
         }
+    }
+
+    public void catchFish(){
+
     }
 
     public void spwnFish(){
@@ -346,7 +354,7 @@ if (this.goodFishesArray.size() != 0) {
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
             canvas.drawLine(this.screenWidth/2,0,this.lineEndX,this.lineEndY,paintbrush);
-            canvas.drawBitmap(this.hook,this.lineEndX - this.hook.getWidth()/2 - 20,this.lineEndY - 10,paintbrush);
+            canvas.drawBitmap(this.hook.getImage(),this.hook.getxPosition() - this.hook.getImage().getWidth()/2 - 20,this.hook.getyPosition() - 10,paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
@@ -383,7 +391,7 @@ if (this.goodFishesArray.size() != 0) {
             this.fingerAction = "moving";
                 this.mouseX = event.getX();
                 this.mouseY = event.getY();
-            
+
         }
         else if (userAction == MotionEvent.ACTION_UP) {
             this.fingerAction = "untapped";

@@ -1,51 +1,40 @@
 package com.ajay.ridiculousfishing;
 
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.Image;
 
-public class Fish {
+public class Hook {
 
-    // PROPERTIES:
-    // Image
-    // Hitbox
+    // PROPERTIES
     private Bitmap image;
     private RectF hitbox;
 
     private float xPosition;
     private float yPosition;
-    private int imagePath;
 
-    public int getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(int imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public Fish(Context context, float x, float y, int imagePath) {
-        // 1. set up the initial position of the Enemy
+    public Hook(Context context, float x, float y) {
+        // 1. set up the initial position of the Hook
         this.xPosition = x;
         this.yPosition = y;
-        this.imagePath = imagePath;
-        this.image = BitmapFactory.decodeResource(context.getResources(), imagePath);
 
-        // Set the default hitbox - all fishes have same hitbox
+        // 2. Set the default image - all hooks have same image
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.hook);
+
+        // 3. Set the default hitbox - all hooks have same hitbox
         this.hitbox = new RectF(
                 this.xPosition,
                 this.yPosition,
                 this.xPosition + this.image.getWidth(),
                 this.yPosition + this.image.getHeight()
-
         );
     }
 
-    // Getter and setters
-    // Autogenerate this by doing Right Click --> Generate --> Getter&Setter
 
+    // GETTER AND SETTER METHODS
     public Bitmap getImage() {
         return image;
     }
