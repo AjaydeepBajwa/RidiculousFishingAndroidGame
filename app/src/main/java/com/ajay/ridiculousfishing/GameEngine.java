@@ -99,6 +99,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.lineEndY = this.screenHeight/2;
 
 
+        this.spwnFish();
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("image widtth is :"+this.skyBackground.getWidth()+"");
 
@@ -173,18 +174,35 @@ public class GameEngine extends SurfaceView implements Runnable {
 //        else{
 
         //int goodFishYPos = this.bgYPosition;
-if (this.goodFishesArray.size() != 0) {
-    for (int i = 0; i < goodFishesArray.size(); i++) {
-        this.goodFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 20);
-        //this.goodFishesArray.get(i).setyPosition(this.goodFishesArray.get(i).getyPosition() - 30);
-        //this.badFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 25);
 
-        if (this.goodFishesArray.get(i).getxPosition() <= (0 - this.goodFishesArray.get(i).getImage().getWidth())) {
-            this.goodFishesArray.get(i).setxPosition(this.screenWidth);
-            //this.goodFishesArray.get(i).setyPosition(800);
+
+        this.moveFishes();
+        this.moveHook();
+        this.catchFish();
+        this.moveBackground();
+
+        if(this.updateCount >= 70) {
+            this.removeFish();
+            this.spwnFish();
+//        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
         }
+        this.updateCount = this.updateCount + 1;
     }
-}
+
+    public void moveFishes(){
+        if (this.goodFishesArray.size() != 0) {
+            for (int i = 0; i < goodFishesArray.size(); i++) {
+                this.goodFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 20);
+                //this.goodFishesArray.get(i).setyPosition(this.goodFishesArray.get(i).getyPosition() - 30);
+                //this.badFishesArray.get(i).setxPosition(this.goodFishesArray.get(i).getxPosition() - 25);
+
+                if (this.goodFishesArray.get(i).getxPosition() <= (0 - this.goodFishesArray.get(i).getImage().getWidth())) {
+                    this.goodFishesArray.get(i).setxPosition(this.screenWidth);
+                    //this.goodFishesArray.get(i).setyPosition(800);
+                }
+                this.goodFishesArray.get(i).updateHitBox();
+            }
+        }
         if (this.badFishesArray.size() != 0) {
             for (int i = 0; i < badFishesArray.size(); i++) {
                 this.badFishesArray.get(i).setxPosition(this.badFishesArray.get(i).getxPosition() - 10);
@@ -194,40 +212,49 @@ if (this.goodFishesArray.size() != 0) {
                     //this.badFishesArray.get(i).setyPosition(1500);
                 }
 
+                this.badFishesArray.get(i).updateHitBox();
             }
         }
-
-
-
-        this.moveBackground();
-        this.moveHook();
-        if(this.updateCount >= 70) {
-            this.removeFish();
-            this.spwnFish();
-//        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
-        }
-        this.updateCount = this.updateCount + 1;
     }
 
     public void moveHook(){
         if ((this.fingerAction == "tapped")||(this.fingerAction == "moving")){
             this.lineEndX = this.mouseX;
             this.hook.setxPosition(this.mouseX);
+            this.hook.setyPosition(this.mouseY);
+            this.lineEndY = this.mouseY;
             //this.hook.getxPosition() = this.mouseX;
             //this.lineEndY = this.mouseY;
+            this.hook.updateHitBox();
         }
     }
 
     public void catchFish(){
+        if (this.goodFishesArray.size() != 0) {
+            for (int i = 0; i < goodFishesArray.size(); i++) {
+                Fish currentGoodFish = this.goodFishesArray.get(i);
+                if (this.hook.getHitbox().intersect(currentGoodFish.getHitbox())) {
+
+                }
+            }
+
+            for (int i = 0; i < badFishesArray.size(); i++) {
+                Fish currentBadFish = this.badFishesArray.get(i);
+                if (this.hook.getHitbox().intersect(currentBadFish.getHitbox())) {
+                    this.canvas.rotate(90);
+                    System.out.println("Intersected");
+                }
+            }
+        }
 
     }
 
     public void spwnFish(){
         if (this.goodFishesArray.size() + this.badFishesArray.size() < 8){
-            int fishXPos = 0 - 200;
-            int goodFishYPos = this.bgYPosition;
+            float fishXPos = 0 - 200;
+            float goodFishYPos = this.bgYPosition;
             for (int i = 0; i < 6; i++) {
-                this.goodFishesArray.add(new Fish(this.getContext(), fishXPos, goodFishYPos, R.drawable.fish1));
+                this.goodFishesArray.add(new Fish(this.getContext(), fishXPos, goodFishYPos,R.drawable.fish1));
                 if (fishXPos == 0-200) {
                     fishXPos = this.screenWidth - this.goodFishesArray.get(i).getImage().getWidth();
                 } else if (fishXPos != 0) {
@@ -236,8 +263,8 @@ if (this.goodFishesArray.size() != 0) {
                 goodFishYPos = goodFishYPos + this.screenHeight / 5;
 
                 if (i % 2 == 0) {
-                    int badFishYPos = goodFishYPos + this.goodFishesArray.get(i).getImage().getHeight()*2;
-                    this.badFishesArray.add(new Fish(this.getContext(), fishXPos, badFishYPos, R.drawable.fish3));
+                    float badFishYPos = goodFishYPos + this.goodFishesArray.get(i).getImage().getHeight()*2;
+                    this.badFishesArray.add(new Fish(this.getContext(), fishXPos, badFishYPos,R.drawable.fish3));
                 }
 
                 System.out.println("Total arrays(both) size : " + (this.goodFishesArray.size() + this.badFishesArray.size()));
@@ -245,7 +272,7 @@ if (this.goodFishesArray.size() != 0) {
             }
             int rareFishX = -200;
             if (this.updateCount%100 == 0){
-                this.rarefishesArray.add(new Fish(this.getContext(), rareFishX, goodFishYPos, R.drawable.rare_fish));
+                this.rarefishesArray.add(new Fish(this.getContext(), rareFishX, goodFishYPos,R.drawable.rare_fish));
             }
         }
     }
@@ -347,16 +374,22 @@ if (this.goodFishesArray.size() != 0) {
             for (int i = 0; i < this.goodFishesArray.size(); i++) {
                 this.canvas.drawBitmap(this.goodFishesArray.get(i).getImage(), this.goodFishesArray.get(i).getxPosition(), this.goodFishesArray.get(i).getyPosition(), paintbrush);
 //                this.canvas.drawBitmap(this.badFishesArray.get(i).getImage(), this.badFishesArray.get(i).getxPosition(), this.badFishesArray.get(i).getyPosition(), paintbrush);
+                this.canvas.drawRect(this.goodFishesArray.get(i).getHitbox(),paintbrush);
                 count = count + 1;
             }
             for (int i = 0; i < this.badFishesArray.size(); i++) {
                 this.canvas.drawBitmap(this.badFishesArray.get(i).getImage(), this.badFishesArray.get(i).getxPosition(), this.badFishesArray.get(i).getyPosition(), paintbrush);
+                this.canvas.drawRect(this.badFishesArray.get(i).getHitbox(),paintbrush);
                 count = count + 1;
             }
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
             canvas.drawLine(this.screenWidth/2,0,this.lineEndX,this.lineEndY,paintbrush);
             canvas.drawBitmap(this.hook.getImage(),this.hook.getxPosition() - this.hook.getImage().getWidth()/2 - 20,this.hook.getyPosition() - 10,paintbrush);
+
+            canvas.drawRect(this.hook.getHitbox(),paintbrush);
+            //canvas.drawRect(this.badFish.getHitbox(),paintbrush);
+            //canvas.drawRect(this.goodFish.getHitbox(),paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
