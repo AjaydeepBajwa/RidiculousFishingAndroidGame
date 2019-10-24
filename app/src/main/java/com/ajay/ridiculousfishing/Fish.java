@@ -17,6 +17,15 @@ public class Fish {
     private float xPosition;
     private float yPosition;
     private int imagePath;
+    private String fishStatus = "";
+
+    public String getFishStatus() {
+        return fishStatus;
+    }
+
+    public void setFishStatus(String fishStatus) {
+        this.fishStatus = fishStatus;
+    }
 
     public int getImagePath() {
         return imagePath;
