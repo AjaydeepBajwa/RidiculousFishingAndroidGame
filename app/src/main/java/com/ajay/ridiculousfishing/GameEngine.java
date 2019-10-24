@@ -59,6 +59,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     float lineEndX;
     float lineEndY;
 
+    float mouseX;
+    float mouseY;
+
     // ----------------------------
     // ## SPRITES
     // ----------------------------
@@ -193,12 +196,20 @@ if (this.goodFishesArray.size() != 0) {
 
 
         this.moveBackground();
+        this.moveHook();
         if(this.updateCount >= 70) {
             this.removeFish();
             this.spwnFish();
 //        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
         }
         this.updateCount = this.updateCount + 1;
+    }
+
+    public void moveHook(){
+        if ((this.fingerAction == "tapped")||(this.fingerAction == "moving")){
+            this.lineEndX = this.mouseX;
+            this.lineEndY = this.mouseY;
+        }
     }
 
     public void spwnFish(){
@@ -363,6 +374,16 @@ if (this.goodFishesArray.size() != 0) {
         //@TODO: What should happen when person touches the screen?
         if (userAction == MotionEvent.ACTION_DOWN) {
             this.fingerAction = "tapped";
+            this.mouseX = event.getX();
+            this.mouseY = event.getY();
+            System.out.println(" "+event.getX() +"  "+event.getY());
+
+        }
+        else if (userAction == MotionEvent.ACTION_MOVE){
+            this.fingerAction = "moving";
+                this.mouseX = event.getX();
+                this.mouseY = event.getY();
+            
         }
         else if (userAction == MotionEvent.ACTION_UP) {
             this.fingerAction = "untapped";
