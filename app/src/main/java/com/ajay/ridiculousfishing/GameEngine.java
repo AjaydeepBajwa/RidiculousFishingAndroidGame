@@ -42,7 +42,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // -----------------------------------
 
     int nightBgTimer = 0;
-    int caughtFishesCount = 0;
+    int fishesCaught = 0;
     int updateCount = 0;
     int skyBgYPos = 0;
     int bgYPosition;
@@ -220,7 +220,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         if (this.rarefishesArray.size() != 0){
             for (int i=0;i<this.rarefishesArray.size();i++){
                 Fish currentRareFish = this.rarefishesArray.get(i);
-                if (currentRareFish.getFishStatus() == "caught"){
+                if (currentRareFish.getFishStatus() == "rareCaught"){
                     currentRareFish.setxPosition(this.hook.getxPosition());
                     currentRareFish.setyPosition(this.hook.getyPosition());
                 }
@@ -244,7 +244,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     public void catchFish(){
-        if (this.goodFishesArray.size() != 0) {
+        //if (this.goodFishesArray.size() != 0) {
             for (int i = 0; i < goodFishesArray.size(); i++) {
                 Fish currentGoodFish = this.goodFishesArray.get(i);
                 if (this.hook.getHitbox().intersect(currentGoodFish.getHitbox())) {
@@ -263,15 +263,31 @@ public class GameEngine extends SurfaceView implements Runnable {
                     this.badFishesArray.remove(i);
                 }
             }
-        }
+            for (int i = 0; i< this.rarefishesArray.size();i++){
+                Fish currentrareFish = this.rarefishesArray.get(i);
+                if (this.hook.getHitbox().intersect(currentrareFish.getHitbox())){
+                    currentrareFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.rare_fish_caught));
+                    currentrareFish.setxPosition(this.hook.getxPosition() - this.hook.getImage().getWidth());
+                    currentrareFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight()-20);
+                    currentrareFish.updateHitBox();
+                    currentrareFish.setFishStatus("rareCaught");
+                    Log.d("RARE FISH CAUGHT","RARE FISH CAUGHT");
+                }
+            }
+        //}
 
     }
 
     public void caughtFishesCount(){
-            this.caughtFishesCount = 0;
+            this.fishesCaught = 0;
             for (int i = 0; i < this.goodFishesArray.size(); i++) {
-                if (this.goodFishesArray.get(i).getFishStatus() == "caught") {
-                    this.caughtFishesCount = this.caughtFishesCount + 1;
+                if ((this.goodFishesArray.get(i).getFishStatus() == "caught")) {
+                    this.fishesCaught = this.fishesCaught + 1;
+                }
+            }
+            for (int i = 0; i< this.rarefishesArray.size();i++){
+                if (this.rarefishesArray.get(i).getFishStatus() == "rareCaught"){
+                    this.fishesCaught = this.fishesCaught + 1;
                 }
             }
     }
@@ -397,6 +413,8 @@ public class GameEngine extends SurfaceView implements Runnable {
             for (int i = 0;i<this.rarefishesArray.size();i++) {
                 System.out.println("No.of rare fishes : " +this.rarefishesArray.size());
                 canvas.drawBitmap(this.rarefishesArray.get(i).getImage(), this.rarefishesArray.get(i).getxPosition(), this.rarefishesArray.get(i).getyPosition(), paintbrush);
+                this.canvas.drawRect(this.rarefishesArray.get(i).getHitbox(),paintbrush);
+                this.rarefishesArray.get(i).updateHitBox();
             }
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
@@ -406,7 +424,7 @@ public class GameEngine extends SurfaceView implements Runnable {
             canvas.drawRect(this.hook.getHitbox(),paintbrush);
             paintbrush.setTextSize(60);
             paintbrush.setColor(Color.YELLOW);
-            canvas.drawText("Fishes Caught :" +this.caughtFishesCount,30,60,paintbrush);
+            canvas.drawText("Fishes Caught :" +this.fishesCaught ,30,60,paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
