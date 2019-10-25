@@ -74,7 +74,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     Hook hook;
 
     Fish goodFish;
-    Fish rareFish;
+    //Fish rareFish;
     Fish badFish;
 
     // represent the TOP LEFT CORNER OF THE GRAPHIC
@@ -96,7 +96,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.lineEndX = this.screenWidth/2;
         this.lineEndY = this.screenHeight/2;
 
-        this.spwnFish();
+        //this.spwnFish();
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("sky image width is :"+this.skyBackground.getWidth()+"");
 
@@ -169,6 +169,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         if(this.updateCount >= 70) {
             this.removeFish();
             this.spwnFish();
+            //this.spawnRareFish();
         }
         this.updateCount = this.updateCount + 1;
 
@@ -179,6 +180,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         if (this.nightBgTimer == 1){
             this.showDayBackground();
         }
+        this.spawnRareFish();
     }
 
     public void moveFishes(){
@@ -213,6 +215,18 @@ public class GameEngine extends SurfaceView implements Runnable {
                 }
 
                 this.badFishesArray.get(i).updateHitBox();
+            }
+        }
+        if (this.rarefishesArray.size() != 0){
+            for (int i=0;i<this.rarefishesArray.size();i++){
+                Fish currentRareFish = this.rarefishesArray.get(i);
+                if (currentRareFish.getFishStatus() == "caught"){
+                    currentRareFish.setxPosition(this.hook.getxPosition());
+                    currentRareFish.setyPosition(this.hook.getyPosition());
+                }
+                else{
+                    currentRareFish.setxPosition(currentRareFish.getxPosition() - 10);
+                }
             }
         }
     }
@@ -268,11 +282,13 @@ public class GameEngine extends SurfaceView implements Runnable {
             this.nightBgTimer = 200;
             this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water_night));
             this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
+            this.background.setImagePath(R.drawable.bg_water_night);
         }
     }
     public void showDayBackground(){
         this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water));
         this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
+        this.background.setImagePath(R.drawable.bg_water);
     }
 
     public void spwnFish(){
@@ -296,9 +312,18 @@ public class GameEngine extends SurfaceView implements Runnable {
                 System.out.println("Total arrays(both) size : " + (this.goodFishesArray.size() + this.badFishesArray.size()));
 
             }
-            int rareFishX = -200;
-            if (this.updateCount%100 == 0){
-                this.rarefishesArray.add(new Fish(this.getContext(), rareFishX, goodFishYPos,R.drawable.rare_fish));
+
+        }
+//        if (this.background.getImagePath() == R.drawable.bg_water_night){
+//            this.rarefishesArray.add(new Fish(this.getContext(), this.screenWidth/2,this.screenHeight/2,R.drawable.rare_fish));
+//        }
+    }
+    public void spawnRareFish(){
+        if (this.background.getImagePath() == R.drawable.bg_water_night){
+            if (this.rarefishesArray.size() < 1 ) {
+                this.rarefishesArray.add(new Fish(this.getContext(), this.screenWidth / 2, this.screenHeight / 2, R.drawable.rare_fish));
+                System.out.println("Rare fish count: " + this.rarefishesArray.size());
+                Log.d("RARE FISH ADDED", "RARE FISH COUNT " + this.rarefishesArray.size() + "");
             }
         }
     }
@@ -369,14 +394,19 @@ public class GameEngine extends SurfaceView implements Runnable {
                 this.canvas.drawRect(this.badFishesArray.get(i).getHitbox(),paintbrush);
                 count = count + 1;
             }
+            for (int i = 0;i<this.rarefishesArray.size();i++) {
+                System.out.println("No.of rare fishes : " +this.rarefishesArray.size());
+                canvas.drawBitmap(this.rarefishesArray.get(i).getImage(), this.rarefishesArray.get(i).getxPosition(), this.rarefishesArray.get(i).getyPosition(), paintbrush);
+            }
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
             canvas.drawLine(this.screenWidth/2,0,this.lineEndX,this.lineEndY,paintbrush);
             canvas.drawBitmap(this.hook.getImage(),this.hook.getxPosition() - this.hook.getImage().getWidth()/2 - 20,this.hook.getyPosition() - 10,paintbrush);
 
             canvas.drawRect(this.hook.getHitbox(),paintbrush);
-            paintbrush.setTextSize(30);
-            canvas.drawText("Fishes Caught :" +this.caughtFishesCount,20,20,paintbrush);
+            paintbrush.setTextSize(60);
+            paintbrush.setColor(Color.YELLOW);
+            canvas.drawText("Fishes Caught :" +this.caughtFishesCount,30,60,paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
