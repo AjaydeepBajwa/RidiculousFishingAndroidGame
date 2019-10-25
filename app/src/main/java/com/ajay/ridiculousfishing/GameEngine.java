@@ -309,10 +309,10 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.background.setImagePath(R.drawable.bg_water);
     }
 public void spawnGoodFish(){
-        if (this.updateCount%10 == 0){
+        if (this.updateCount%20 == 0){
             for (int i = 0;i<3;i++){
                 if (i == 0) {
-                    this.goodFishesArray.add(new Fish(this.getContext(), this.screenWidth, this.screenHeight / 4, R.drawable.fish1));
+                    this.goodFishesArray.add(new Fish(this.getContext(), this.screenWidth, this.screenHeight, R.drawable.fish1));
                 }
                 else{
                     Fish prevFish = this.goodFishesArray.get(i-1);
@@ -323,10 +323,10 @@ public void spawnGoodFish(){
 }
 
 public void spawnBadFish(){
-    if (this.updateCount%20 == 0){
+    if (this.updateCount%60 == 0){
         for (int i = 0;i<2;i++){
             if (i == 0) {
-                this.badFishesArray.add(new Fish(this.getContext(), 0 - this.badFishesArray.get(i).getImage().getWidth(), this.screenHeight / 4, R.drawable.fish3));
+                this.badFishesArray.add(new Fish(this.getContext(), 0 - 100, this.screenHeight - 500, R.drawable.fish3));
             }
             else{
                 Fish prevFish = this.badFishesArray.get(i-1);
