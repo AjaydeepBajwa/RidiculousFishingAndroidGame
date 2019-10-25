@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -177,6 +178,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         //int goodFishYPos = this.bgYPosition;
 
 
+        this.caughtFishesCount();
         this.moveFishes();
         this.moveHook();
         this.catchFish();
@@ -243,17 +245,29 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
     }
 
+    //int //intersectCount = 0;
     String fishStatus = "";
     public void catchFish(){
         if (this.goodFishesArray.size() != 0) {
             for (int i = 0; i < goodFishesArray.size(); i++) {
                 Fish currentGoodFish = this.goodFishesArray.get(i);
                 if (this.hook.getHitbox().intersect(currentGoodFish.getHitbox())) {
+                    //ntersectCount = intersectCount + 1;
                     currentGoodFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fish1_caught));
-                    currentGoodFish.setxPosition(this.hook.getxPosition());
-                    currentGoodFish.setyPosition(this.hook.getyPosition());
+                    currentGoodFish.setxPosition(this.hook.getxPosition() - this.hook.getImage().getWidth());
+                    currentGoodFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight()-20);
+                    currentGoodFish.updateHitBox();
+                    //this.hook.updateHitBox();
                     currentGoodFish.setFishStatus("caught");
-                    this.caughtFishesCount = this.caughtFishesCount + 1;
+                    //this.goodFishesArray.remove(i);
+
+//                    Fish newGoodFish = new Fish(this.getContext(),this.hook.getxPosition(),this.hook.getyPosition(),R.drawable.fish1_caught);
+//                    canvas.drawBitmap(newGoodFish,newGoodFish.getxPosition(),newGoodFish.getyPosition(),paintbrush);
+
+
+//                    if (intersectCount == 1) {
+                        //this.caughtFishesCount = this.caughtFishesCount + 1;
+                    //}
                 }
             }
 
@@ -268,6 +282,18 @@ public class GameEngine extends SurfaceView implements Runnable {
             }
         }
 
+    }
+
+    public void caughtFishesCount(){
+        //if (updateCount%10 == 0) {
+            this.caughtFishesCount = 0;
+            for (int i = 0; i < this.goodFishesArray.size(); i++) {
+                if (this.goodFishesArray.get(i).getFishStatus() == "caught") {
+                    this.caughtFishesCount = this.caughtFishesCount + 1;
+                }
+            }
+        //}
+        //this.caughtFishesCount = 0;
     }
 
     public void spwnFish(){
@@ -411,7 +437,8 @@ public class GameEngine extends SurfaceView implements Runnable {
             canvas.drawRect(this.hook.getHitbox(),paintbrush);
             //canvas.drawRect(this.badFish.getHitbox(),paintbrush);
             //canvas.drawRect(this.goodFish.getHitbox(),paintbrush);
-            
+            paintbrush.setTextSize(30);
+            canvas.drawText("Fishes Caught :" +this.caughtFishesCount,20,20,paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
