@@ -47,6 +47,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     int skyBgYPos = 0;
     int bgYPosition;
     int bg2YPosition;
+    int bgMoveSpeed = 30;
 
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
@@ -73,9 +74,6 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     Hook hook;
 
-    Fish goodFish;
-    //Fish rareFish;
-    Fish badFish;
 
     // represent the TOP LEFT CORNER OF THE GRAPHIC
 
@@ -168,7 +166,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         if(this.updateCount >= 70) {
             this.removeFish();
-            this.spwnFish();
+            this.spawnGoodFish();
+            this.spawnBadFish();
+            //this.spwnFish();
             //this.spawnRareFish();
         }
         this.updateCount = this.updateCount + 1;
@@ -189,6 +189,7 @@ public class GameEngine extends SurfaceView implements Runnable {
                 Fish currentGoodFish = this.goodFishesArray.get(i);
                 if (currentGoodFish.getFishStatus() != "caught") {
                     currentGoodFish.setxPosition(currentGoodFish.getxPosition() - 20);
+                    currentGoodFish.setyPosition(currentGoodFish.getyPosition() - this.bgMoveSpeed);
                 }
                 if (currentGoodFish.getFishStatus() == "caught"){
                     currentGoodFish.setxPosition(this.hook.getxPosition());
@@ -204,7 +205,8 @@ public class GameEngine extends SurfaceView implements Runnable {
             for (int i = 0; i < badFishesArray.size(); i++) {
                 Fish currentbadfish = this.badFishesArray.get(i);
                 if (currentbadfish.getFishStatus() != "caught") {
-                    currentbadfish.setxPosition(currentbadfish.getxPosition() - 10);
+                    currentbadfish.setxPosition(currentbadfish.getxPosition() + 10);
+                    currentbadfish.setyPosition(currentbadfish.getyPosition() - bgMoveSpeed);
                 }
                 if (currentbadfish.getFishStatus() == "caught"){
                     currentbadfish.setxPosition(this.hook.getxPosition());
@@ -306,34 +308,34 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
         this.background.setImagePath(R.drawable.bg_water);
     }
-
-    public void spwnFish(){
-        if (this.goodFishesArray.size() + this.badFishesArray.size() < 8){
-            float fishXPos = 0 - 200;
-            float goodFishYPos = this.bgYPosition;
-            for (int i = 0; i < 6; i++) {
-                this.goodFishesArray.add(new Fish(this.getContext(), fishXPos, goodFishYPos,R.drawable.fish1));
-                if (fishXPos == 0-200) {
-                    fishXPos = this.screenWidth - this.goodFishesArray.get(i).getImage().getWidth();
-                } else if (fishXPos != 0) {
-                    fishXPos = 0 - 200;
+public void spawnGoodFish(){
+        if (this.updateCount%10 == 0){
+            for (int i = 0;i<3;i++){
+                if (i == 0) {
+                    this.goodFishesArray.add(new Fish(this.getContext(), this.screenWidth, this.screenHeight / 4, R.drawable.fish1));
                 }
-                goodFishYPos = goodFishYPos + this.screenHeight / 5;
-
-                if (i % 2 == 0) {
-                    float badFishYPos = goodFishYPos + this.goodFishesArray.get(i).getImage().getHeight()*2;
-                    this.badFishesArray.add(new Fish(this.getContext(), fishXPos, badFishYPos,R.drawable.fish3));
+                else{
+                    Fish prevFish = this.goodFishesArray.get(i-1);
+                    this.goodFishesArray.add(new Fish(this.getContext(),this.screenWidth,prevFish.getyPosition() - prevFish.getImage().getHeight()*4,R.drawable.fish1));
                 }
-
-                System.out.println("Total arrays(both) size : " + (this.goodFishesArray.size() + this.badFishesArray.size()));
-
             }
-
         }
-//        if (this.background.getImagePath() == R.drawable.bg_water_night){
-//            this.rarefishesArray.add(new Fish(this.getContext(), this.screenWidth/2,this.screenHeight/2,R.drawable.rare_fish));
-//        }
+}
+
+public void spawnBadFish(){
+    if (this.updateCount%20 == 0){
+        for (int i = 0;i<2;i++){
+            if (i == 0) {
+                this.badFishesArray.add(new Fish(this.getContext(), 0 - this.badFishesArray.get(i).getImage().getWidth(), this.screenHeight / 4, R.drawable.fish3));
+            }
+            else{
+                Fish prevFish = this.badFishesArray.get(i-1);
+                this.badFishesArray.add(new Fish(this.getContext(),this.screenWidth,prevFish.getyPosition() - prevFish.getImage().getHeight()*4,R.drawable.fish3));
+            }
+        }
     }
+}
+
     public void spawnRareFish(){
         if (this.background.getImagePath() == R.drawable.bg_water_night){
             if (this.rarefishesArray.size() < 1 ) {
@@ -365,8 +367,8 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public void moveBackground(){
         this.skyBgYPos = this.skyBgYPos - 10;
-        this.bgYPosition = this.bgYPosition - 30;
-        this.bg2YPosition = this.bg2YPosition - 30;
+        this.bgYPosition = this.bgYPosition - this.bgMoveSpeed;
+        this.bg2YPosition = this.bg2YPosition - this.bgMoveSpeed;
 
 
         if ((this.bgYPosition + this.background.getImage().getHeight())<=0){
