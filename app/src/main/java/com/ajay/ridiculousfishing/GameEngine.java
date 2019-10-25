@@ -49,7 +49,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     int bgYPosition;
     int bg2YPosition;
     int bgMoveSpeed = 30;
-    int skyBgMoveSpeed = 10;
+    int skyBgMoveSpeed = 30;
 
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
@@ -384,10 +384,10 @@ public void spawnBadFish(){
         }
         else {
             if((this.bg2YPosition >= this.screenHeight)){
-                this.bg2YPosition = this.bgYPosition - this.background.getImage().getWidth();
+                this.bg2YPosition = this.bgYPosition - this.background.getImage().getHeight();
             }
             if((this.bgYPosition >= this.screenHeight)){
-                this.bgYPosition = this.bg2YPosition - this.background.getImage().getWidth();
+                this.bgYPosition = this.bg2YPosition - this.background.getImage().getHeight();
             }
         }
     }
@@ -396,7 +396,7 @@ public void spawnBadFish(){
     public void movetoTop(){
         if (this.updateCount%500 == 0){
             this.bgMoveSpeed = -80;
-            this.skyBgMoveSpeed = -20;
+            this.skyBgMoveSpeed = -80;
             this.moveDown = false;
         }
     }
