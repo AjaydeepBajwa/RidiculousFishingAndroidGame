@@ -46,6 +46,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     Boolean moveDown = true;
     int nightBgTimer = 0;
     int fishesCaught = 0;
+    int rareFishesCaught = 0;
     int updateCount = 1;
     int skyBgYPos = 0;
     int bgYPosition;
@@ -102,10 +103,10 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.lineEndY = this.screenHeight/2;
 
         //this.spwnFish();
-        this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
+        this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.main_bg);
         System.out.println("sky image width is :"+this.skyBackground.getWidth()+"");
 
-        this.skyBackground = Bitmap.createScaledBitmap(this.skyBackground, this.screenWidth, this.screenHeight - 600, false);
+        this.skyBackground = Bitmap.createScaledBitmap(this.skyBackground, this.screenWidth, this.screenHeight, false);
 
         this.fisherMan = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fisherman);
         this.fisherMan = Bitmap.createScaledBitmap(this.fisherMan,this.screenWidth*3/4,this.screenHeight/3,false);
@@ -240,6 +241,7 @@ public class GameEngine extends SurfaceView implements Runnable {
                 }
                 else{
                     currentRareFish.setxPosition(currentRareFish.getxPosition() - 10);
+                    currentRareFish.setyPosition(currentRareFish.getyPosition() - bgMoveSpeed);
                 }
             }
         }
@@ -294,6 +296,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public void caughtFishesCount(){
             this.fishesCaught = 0;
+            this.rareFishesCaught = 0;
             for (int i = 0; i < this.goodFishesArray.size(); i++) {
                 if ((this.goodFishesArray.get(i).getFishStatus() == "caught")) {
                     this.fishesCaught = this.fishesCaught + 1;
@@ -301,7 +304,7 @@ public class GameEngine extends SurfaceView implements Runnable {
             }
             for (int i = 0; i< this.rarefishesArray.size();i++){
                 if (this.rarefishesArray.get(i).getFishStatus() == "rareCaught"){
-                    this.fishesCaught = this.fishesCaught + 1;
+                    this.rareFishesCaught = this.rareFishesCaught + 1;
                 }
             }
     }
@@ -351,7 +354,7 @@ public void spawnBadFish(){
     public void spawnRareFish(){
         if (this.background.getImagePath() == R.drawable.bg_water_night){
             if (this.rarefishesArray.size() < 1 ) {
-                this.rarefishesArray.add(new Fish(this.getContext(), this.screenWidth / 2, this.screenHeight / 2, R.drawable.rare_fish));
+                this.rarefishesArray.add(new Fish(this.getContext(), this.screenWidth, this.screenHeight - 100, R.drawable.rare_fish));
                 System.out.println("Rare fish count: " + this.rarefishesArray.size());
                 Log.d("RARE FISH ADDED", "RARE FISH COUNT " + this.rarefishesArray.size() + "");
             }
@@ -464,6 +467,7 @@ public void spawnBadFish(){
             paintbrush.setTextSize(60);
             paintbrush.setColor(Color.YELLOW);
             canvas.drawText("Fishes Caught :" +this.fishesCaught ,30,60,paintbrush);
+            canvas.drawText("Rare Fishes Caught: "+this.rareFishesCaught,30,120,paintbrush);
 
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
