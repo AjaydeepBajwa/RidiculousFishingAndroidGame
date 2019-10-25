@@ -44,6 +44,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // GAME SPECIFIC VARIABLES
     // -----------------------------------
 
+    int nightBgTimer = 0;
     int caughtFishesCount = 0;
     int updateCount = 0;
     int skyBgYPos = 0;
@@ -71,7 +72,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
 
     Bitmap skyBackground;
-    Bitmap background;
+    //Bitmap background;
+    Background background;
     Bitmap fisherMan;
     //Bitmap hook;
 
@@ -115,13 +117,14 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.bgYPosition = this.skyBackground.getHeight();
         //setup background
-        this.background = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water);
-        System.out.println("image widtth is :"+this.background.getWidth()+"");
+        //this.background = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water);
+        this.background = new Background(context,0,this.bgYPosition,R.drawable.bg_water);
+        System.out.println("image widtth is :"+this.background.getImage().getWidth()+"");
 
-        this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight*2, false);
+        this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
 
         this.bgYPosition = this.skyBackground.getHeight();
-        this.bg2YPosition = this.bgYPosition + this.background.getHeight();
+        this.bg2YPosition = this.bgYPosition + this.background.getImage().getHeight();
 
         this.printScreenInfo();
     }
@@ -177,7 +180,6 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         //int goodFishYPos = this.bgYPosition;
 
-
         this.caughtFishesCount();
         this.moveFishes();
         this.moveHook();
@@ -190,6 +192,15 @@ public class GameEngine extends SurfaceView implements Runnable {
 //        System.out.println("position of good fish: " +this.goodFish.getyPosition() +","+this.goodFish.getxPosition());
         }
         this.updateCount = this.updateCount + 1;
+
+
+            this.showNightbackground();
+        if (this.nightBgTimer>0){
+            this.nightBgTimer = this.nightBgTimer - 1;
+        }
+        if (this.nightBgTimer == 1){
+            this.showDayBackground();
+        }
     }
 
     public void moveFishes(){
@@ -296,6 +307,22 @@ public class GameEngine extends SurfaceView implements Runnable {
         //this.caughtFishesCount = 0;
     }
 
+
+    public void showNightbackground(){
+        if (this.updateCount%700 == 0){
+            this.nightBgTimer = 200;
+            this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water_night));
+            this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
+        }
+//        else {
+//            //this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water));
+//        }
+    }
+    public void showDayBackground(){
+        this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water));
+        this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
+    }
+
     public void spwnFish(){
         if (this.goodFishesArray.size() + this.badFishesArray.size() < 8){
             float fishXPos = 0 - 200;
@@ -384,11 +411,11 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.bg2YPosition = this.bg2YPosition - 30;
 
 
-        if ((this.bgYPosition + this.background.getHeight())<=0){
-            this.bgYPosition = this.bg2YPosition+this.background.getHeight();
+        if ((this.bgYPosition + this.background.getImage().getHeight())<=0){
+            this.bgYPosition = this.bg2YPosition+this.background.getImage().getHeight();
         }
-        if ((this.bg2YPosition + this.background.getHeight())<=0){
-            this.bg2YPosition = this.bgYPosition + this.background.getHeight();
+        if ((this.bg2YPosition + this.background.getImage().getHeight())<=0){
+            this.bg2YPosition = this.bgYPosition + this.background.getImage().getHeight();
         }
     }
 
@@ -403,8 +430,8 @@ public class GameEngine extends SurfaceView implements Runnable {
             this.canvas.drawColor(Color.argb(255,255,255,255));
             paintbrush.setColor(Color.WHITE);
             canvas.drawBitmap(this.skyBackground,0,skyBgYPos,paintbrush);
-            canvas.drawBitmap(this.background,0,this.bgYPosition,paintbrush);
-            canvas.drawBitmap(this.background,0,this.bg2YPosition,paintbrush);
+            canvas.drawBitmap(this.background.getImage(),0,this.bgYPosition,paintbrush);
+            canvas.drawBitmap(this.background.getImage(),0,this.bg2YPosition,paintbrush);
 
 
             // DRAW THE PLAYER HITBOX
