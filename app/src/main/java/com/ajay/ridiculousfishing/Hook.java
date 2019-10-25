@@ -26,7 +26,7 @@ public class Hook {
 
         // 3. Set the default hitbox - all hooks have same hitbox
         this.hitbox = new RectF(
-                this.xPosition -35,
+                this.xPosition - this.getImage().getWidth()/2 - 20,
                 this.yPosition - 10,
                 this.xPosition + this.image.getWidth(),
                 this.yPosition + this.image.getHeight()

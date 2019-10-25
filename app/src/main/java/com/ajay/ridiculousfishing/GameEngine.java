@@ -404,18 +404,18 @@ public void spawnBadFish(){
             int count = 0;
             for (int i = 0; i < this.goodFishesArray.size(); i++) {
                 this.canvas.drawBitmap(this.goodFishesArray.get(i).getImage(), this.goodFishesArray.get(i).getxPosition(), this.goodFishesArray.get(i).getyPosition(), paintbrush);
-                this.canvas.drawRect(this.goodFishesArray.get(i).getHitbox(),paintbrush);
+                //this.canvas.drawRect(this.goodFishesArray.get(i).getHitbox(),paintbrush);
                 count = count + 1;
             }
             for (int i = 0; i < this.badFishesArray.size(); i++) {
                 this.canvas.drawBitmap(this.badFishesArray.get(i).getImage(), this.badFishesArray.get(i).getxPosition(), this.badFishesArray.get(i).getyPosition(), paintbrush);
-                this.canvas.drawRect(this.badFishesArray.get(i).getHitbox(),paintbrush);
+                //this.canvas.drawRect(this.badFishesArray.get(i).getHitbox(),paintbrush);
                 count = count + 1;
             }
             for (int i = 0;i<this.rarefishesArray.size();i++) {
                 System.out.println("No.of rare fishes : " +this.rarefishesArray.size());
                 canvas.drawBitmap(this.rarefishesArray.get(i).getImage(), this.rarefishesArray.get(i).getxPosition(), this.rarefishesArray.get(i).getyPosition(), paintbrush);
-                this.canvas.drawRect(this.rarefishesArray.get(i).getHitbox(),paintbrush);
+                //this.canvas.drawRect(this.rarefishesArray.get(i).getHitbox(),paintbrush);
                 this.rarefishesArray.get(i).updateHitBox();
             }
             System.out.println("no.of fishes: " +count);
@@ -423,7 +423,7 @@ public void spawnBadFish(){
             canvas.drawLine(this.screenWidth/2,0,this.lineEndX,this.lineEndY,paintbrush);
             canvas.drawBitmap(this.hook.getImage(),this.hook.getxPosition() - this.hook.getImage().getWidth()/2 - 20,this.hook.getyPosition() - 10,paintbrush);
 
-            canvas.drawRect(this.hook.getHitbox(),paintbrush);
+           //canvas.drawRect(this.hook.getHitbox(),paintbrush);
             paintbrush.setTextSize(60);
             paintbrush.setColor(Color.YELLOW);
             canvas.drawText("Fishes Caught :" +this.fishesCaught ,30,60,paintbrush);
