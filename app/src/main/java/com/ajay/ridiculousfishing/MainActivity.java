@@ -9,6 +9,7 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
     GameEngine ridiculousFishing;
+    //Boolean playBtnTapped;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,10 +19,12 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+        //his.playBtnTapped = false;
 
         // Initialize the GameEngine object
         // Pass it the screen size (height & width)
       ridiculousFishing = new GameEngine(this, size.x, size.y);
+      ridiculousFishing.playBtnTapped = false;
 //
 //        // Make GameEngine the view of the Activity
         setContentView(R.layout.activity_main);
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 //        ridiculousFishing = new GameEngine(this, size.x, size.y);
 
         // Make GameEngine the view of the Activity
+        this.ridiculousFishing.playBtnTapped = true;
         setContentView(ridiculousFishing);
     }
 

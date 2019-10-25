@@ -18,6 +18,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     // Android debug variables
     final static String TAG="RIDICULOUS-FISHING";
+    MainActivity mainActivity;
 
     // screen size
     int screenHeight;
@@ -41,10 +42,11 @@ public class GameEngine extends SurfaceView implements Runnable {
     // GAME SPECIFIC VARIABLES
     // -----------------------------------
 
+    Boolean playBtnTapped;
     Boolean moveDown = true;
     int nightBgTimer = 0;
     int fishesCaught = 0;
-    int updateCount = 0;
+    int updateCount = 1;
     int skyBgYPos = 0;
     int bgYPosition;
     int bg2YPosition;
@@ -93,6 +95,9 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
+        //this.playBtnTapped = false;
+        this.mainActivity = new MainActivity();
+
         this.lineEndX = this.screenWidth/2;
         this.lineEndY = this.screenHeight/2;
 
@@ -100,7 +105,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.skyBackground = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky);
         System.out.println("sky image width is :"+this.skyBackground.getWidth()+"");
 
-        this.skyBackground = Bitmap.createScaledBitmap(this.skyBackground, this.screenWidth, this.screenHeight, false);
+        this.skyBackground = Bitmap.createScaledBitmap(this.skyBackground, this.screenWidth, this.screenHeight - 600, false);
 
         this.fisherMan = BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fisherman);
         this.fisherMan = Bitmap.createScaledBitmap(this.fisherMan,this.screenWidth*3/4,this.screenHeight/3,false);
@@ -130,9 +135,12 @@ public class GameEngine extends SurfaceView implements Runnable {
     @Override
     public void run() {
         while (gameIsRunning == true) {
-            this.redrawSprites();
-            this.updatePositions();
-            this.setFPS();
+            if (this.playBtnTapped == true) {
+                this.updatePositions();
+                this.setFPS();
+                this.redrawSprites();
+            }
+            System.out.println("playBtnValue : " +this.playBtnTapped.toString());
         }
     }
 
@@ -147,9 +155,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     public void startGame() {
-        gameIsRunning = true;
-        gameThread = new Thread(this);
-        gameThread.start();
+            gameIsRunning = true;
+            gameThread = new Thread(this);
+            gameThread.start();
     }
 
 
@@ -173,7 +181,6 @@ public class GameEngine extends SurfaceView implements Runnable {
             //this.spwnFish();
             //this.spawnRareFish();
         }
-        this.updateCount = this.updateCount + 1;
 
         this.showNightbackground();
         if (this.nightBgTimer>0){
@@ -184,6 +191,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
         this.spawnRareFish();
         this.movetoTop();
+        this.updateCount = this.updateCount + 1;
+        System.out.println("Update count :" +this.updateCount);
     }
 
     public void moveFishes(){
@@ -249,13 +258,14 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     public void catchFish(){
-        //if (this.goodFishesArray.size() != 0) {
+        //if (this.updateCount > 200) {
+            //if (this.goodFishesArray.size() != 0) {
             for (int i = 0; i < goodFishesArray.size(); i++) {
                 Fish currentGoodFish = this.goodFishesArray.get(i);
                 if (this.hook.getHitbox().intersect(currentGoodFish.getHitbox())) {
-                    currentGoodFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.fish1_caught));
+                    currentGoodFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.fish1_caught));
                     currentGoodFish.setxPosition(this.hook.getxPosition() - this.hook.getImage().getWidth());
-                    currentGoodFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight()-20);
+                    currentGoodFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight() - 20);
                     currentGoodFish.updateHitBox();
                     currentGoodFish.setFishStatus("caught");
                 }
@@ -268,19 +278,18 @@ public class GameEngine extends SurfaceView implements Runnable {
                     this.badFishesArray.remove(i);
                 }
             }
-            for (int i = 0; i< this.rarefishesArray.size();i++){
+            for (int i = 0; i < this.rarefishesArray.size(); i++) {
                 Fish currentrareFish = this.rarefishesArray.get(i);
-                if (this.hook.getHitbox().intersect(currentrareFish.getHitbox())){
-                    currentrareFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.rare_fish_caught));
+                if (this.hook.getHitbox().intersect(currentrareFish.getHitbox())) {
+                    currentrareFish.setImage(BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.rare_fish_caught));
                     currentrareFish.setxPosition(this.hook.getxPosition() - this.hook.getImage().getWidth());
-                    currentrareFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight()-20);
+                    currentrareFish.setyPosition(this.hook.getyPosition() + this.hook.getImage().getHeight() - 20);
                     currentrareFish.updateHitBox();
                     currentrareFish.setFishStatus("rareCaught");
-                    Log.d("RARE FISH CAUGHT","RARE FISH CAUGHT");
+                    Log.d("RARE FISH CAUGHT", "RARE FISH CAUGHT");
                 }
             }
-        //}
-
+            //}
     }
 
     public void caughtFishesCount(){
@@ -382,7 +391,7 @@ public void spawnBadFish(){
                 this.bg2YPosition = this.bgYPosition + this.background.getImage().getHeight();
             }
         }
-        else {
+        else if (this.moveDown == false){
             if((this.bg2YPosition >= this.screenHeight)){
                 this.bg2YPosition = this.bgYPosition - this.background.getImage().getHeight();
             }
@@ -444,6 +453,7 @@ public void spawnBadFish(){
                 canvas.drawBitmap(this.rarefishesArray.get(i).getImage(), this.rarefishesArray.get(i).getxPosition(), this.rarefishesArray.get(i).getyPosition(), paintbrush);
                 //this.canvas.drawRect(this.rarefishesArray.get(i).getHitbox(),paintbrush);
                 this.rarefishesArray.get(i).updateHitBox();
+                count = count + 1;
             }
             System.out.println("no.of fishes: " +count);
            // canvas.drawBitmap(this.fisherMan,this.screenWidth - this.fisherMan.getWidth(),this.bgYPosition - this.fisherMan.getHeight(),paintbrush);
