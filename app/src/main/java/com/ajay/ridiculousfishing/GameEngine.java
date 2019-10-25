@@ -41,6 +41,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // GAME SPECIFIC VARIABLES
     // -----------------------------------
 
+    Boolean moveDown = true;
     int nightBgTimer = 0;
     int fishesCaught = 0;
     int updateCount = 0;
@@ -48,6 +49,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     int bgYPosition;
     int bg2YPosition;
     int bgMoveSpeed = 30;
+    int skyBgMoveSpeed = 10;
 
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
@@ -181,6 +183,7 @@ public class GameEngine extends SurfaceView implements Runnable {
             this.showDayBackground();
         }
         this.spawnRareFish();
+        this.movetoTop();
     }
 
     public void moveFishes(){
@@ -296,8 +299,8 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
     public void showNightbackground(){
-        if (this.updateCount%700 == 0){
-            this.nightBgTimer = 200;
+        if (this.updateCount%300 == 0){
+            this.nightBgTimer = 150;
             this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water_night));
             this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
             this.background.setImagePath(R.drawable.bg_water_night);
@@ -366,16 +369,35 @@ public void spawnBadFish(){
 
 
     public void moveBackground(){
-        this.skyBgYPos = this.skyBgYPos - 10;
+        this.skyBgYPos = this.skyBgYPos - this.skyBgMoveSpeed;
         this.bgYPosition = this.bgYPosition - this.bgMoveSpeed;
         this.bg2YPosition = this.bg2YPosition - this.bgMoveSpeed;
 
 
-        if ((this.bgYPosition + this.background.getImage().getHeight())<=0){
-            this.bgYPosition = this.bg2YPosition+this.background.getImage().getHeight();
+        if (this.moveDown == true) {
+            if ((this.bgYPosition + this.background.getImage().getHeight()) <= 0) {
+                this.bgYPosition = this.bg2YPosition + this.background.getImage().getHeight();
+            }
+            if ((this.bg2YPosition + this.background.getImage().getHeight()) <= 0) {
+                this.bg2YPosition = this.bgYPosition + this.background.getImage().getHeight();
+            }
         }
-        if ((this.bg2YPosition + this.background.getImage().getHeight())<=0){
-            this.bg2YPosition = this.bgYPosition + this.background.getImage().getHeight();
+        else {
+            if((this.bg2YPosition >= this.screenHeight)){
+                this.bg2YPosition = this.bgYPosition - this.background.getImage().getWidth();
+            }
+            if((this.bgYPosition >= this.screenHeight)){
+                this.bgYPosition = this.bg2YPosition - this.background.getImage().getWidth();
+            }
+        }
+    }
+
+
+    public void movetoTop(){
+        if (this.updateCount%500 == 0){
+            this.bgMoveSpeed = -80;
+            this.skyBgMoveSpeed = -20;
+            this.moveDown = false;
         }
     }
 
@@ -390,9 +412,14 @@ public void spawnBadFish(){
             this.canvas.drawColor(Color.argb(255,255,255,255));
             paintbrush.setColor(Color.WHITE);
             canvas.drawBitmap(this.skyBackground,0,skyBgYPos,paintbrush);
-            canvas.drawBitmap(this.background.getImage(),0,this.bgYPosition,paintbrush);
-            canvas.drawBitmap(this.background.getImage(),0,this.bg2YPosition,paintbrush);
-
+            //if (this.moveDown = true) {
+                canvas.drawBitmap(this.background.getImage(), 0, this.bgYPosition, paintbrush);
+                canvas.drawBitmap(this.background.getImage(), 0, this.bg2YPosition, paintbrush);
+            //}
+//            else if (this.moveDown == false){
+//                canvas.drawBitmap(this.background.getImage(), 0, this.bgYPosition, paintbrush);
+//                canvas.drawBitmap(this.background.getImage(), 0, this.bg2YPosition, paintbrush);
+//            }
 
             // DRAW THE PLAYER HITBOX
             // ------------------------
