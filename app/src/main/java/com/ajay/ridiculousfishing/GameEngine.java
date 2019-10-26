@@ -48,6 +48,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     int fishesCaught = 0;
     int rareFishesCaught = 0;
     int updateCount = 1;
+    int bgMoveCounter = 1;
     int skyBgYPos = 0;
     int bgYPosition;
     int bg2YPosition;
@@ -193,6 +194,14 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.spawnRareFish();
         this.movetoTop();
         this.updateCount = this.updateCount + 1;
+        if (this.moveDown == true){
+            this.bgMoveCounter = this.bgMoveCounter + 1;
+        }
+        if (this.moveDown == false){
+            this.bgMoveCounter = bgMoveCounter - 1;
+        }
+        this.reachTop();
+        System.out.println("BGMove Counter :" +this.bgMoveCounter);
         System.out.println("Update count :" +this.updateCount);
     }
 
@@ -311,7 +320,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
     public void showNightbackground(){
-        if (this.updateCount%300 == 0){
+        if (this.updateCount%250 == 0){
             this.nightBgTimer = 150;
             this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_water_night));
             this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
@@ -406,10 +415,18 @@ public void spawnBadFish(){
 
 
     public void movetoTop(){
-        if (this.updateCount%500 == 0){
+        if (this.updateCount%350 == 0){
             this.bgMoveSpeed = -80;
             this.skyBgMoveSpeed = -80;
             this.moveDown = false;
+        }
+    }
+
+    public void reachTop(){
+        if (this.bgMoveCounter == 1 ){
+            this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.main_bg));
+            this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
+            this.background.setImagePath(R.drawable.main_bg);
         }
     }
 
