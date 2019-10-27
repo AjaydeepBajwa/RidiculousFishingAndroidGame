@@ -29,10 +29,19 @@ public class MainActivity extends AppCompatActivity {
 //        // Make GameEngine the view of the Activity
         setContentView(R.layout.activity_main);
     }
-    public void startGame(View view){
+    public void startMachineGame(View view){
 //        ridiculousFishing = new GameEngine(this, size.x, size.y);
 
         // Make GameEngine the view of the Activity
+        this.ridiculousFishing.playBtnTapped = true;
+        this.ridiculousFishing.gunSelected = "machine";
+        setContentView(ridiculousFishing);
+    }
+    public void startSingleShotGame(View view){
+//        ridiculousFishing = new GameEngine(this, size.x, size.y);
+
+        // Make GameEngine the view of the Activity
+        this.ridiculousFishing.gunSelected = "single";
         this.ridiculousFishing.playBtnTapped = true;
         setContentView(ridiculousFishing);
     }

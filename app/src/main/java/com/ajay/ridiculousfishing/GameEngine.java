@@ -43,6 +43,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // -----------------------------------
 
     Boolean playBtnTapped;
+    String gunSelected = "";
     Boolean moveDown = true;
     int nightBgTimer = 0;
     int fishesCaught = 0;
@@ -56,8 +57,6 @@ public class GameEngine extends SurfaceView implements Runnable {
     int skyBgMoveSpeed = 30;
     int fishesShot = 0;
 
-    Random random;
-    public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
 
     public ArrayList<Fish> rarefishesArray = new ArrayList<Fish>();
 
@@ -115,6 +114,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.fisherMan = Bitmap.createScaledBitmap(this.fisherMan,this.screenWidth*3/4,this.screenHeight/3,false);
 
         this.bullet = new Gun(context,this.screenWidth - 100,this.screenHeight - 100);
+        this.bullet.setImage(Bitmap.createScaledBitmap(this.bullet.getImage(),30,30,false));
+
         this.hook = new Hook(this.getContext(),this.lineEndX,this.lineEndY);
 
         this.bgYPosition = this.skyBackground.getHeight();
@@ -312,16 +313,24 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     public void moveBullet(){
-        if ((this.fingerAction == "tapped")||(this.fingerAction == "moving"))
-        {
-            //this.lineEndX = this.mouseX;
+        if (this.gunSelected == "machine"){
+            if ((this.fingerAction == "tapped")||(this.fingerAction == "moving"))
+             {
             this.bullet.setxPosition(this.mouseX);
             this.bullet.setyPosition(this.mouseY);
-            //this.lineEndY = this.mouseY;
-            //this.hook.getxPosition() = this.mouseX;
-            //this.lineEndY = this.mouseY;
             this.bullet.updateHitBox();
+            }
         }
+        else if (this.gunSelected == "single"){
+            if ((this.fingerAction == "tapped"))
+            {
+                //this.lineEndX = this.mouseX;
+                this.bullet.setxPosition(this.mouseX);
+                this.bullet.setyPosition(this.mouseY);
+                this.bullet.updateHitBox();
+            }
+        }
+
     }
 
     public void shootFish(){
