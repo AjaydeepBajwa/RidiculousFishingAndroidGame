@@ -54,6 +54,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     int bg2YPosition;
     int bgMoveSpeed = 30;
     int skyBgMoveSpeed = 30;
+    int goodFishMoveSpeed = -20;
+    int badFishMoveSpeed = 10;
+    String fishDirection = "left";
 
     Random random;
     public ArrayList<Fish> fishesArray = new ArrayList<Fish>();
@@ -171,13 +174,18 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void updatePositions() {
 
         this.caughtFishesCount();
-        this.moveFishes();
+        if (this.fishDirection == "left"){
+            this.moveFishesLeft();
+        }
+        if (this.fishDirection == "right") {
+            this.moveFishesRight();
+        }
         this.moveHook();
         this.catchFish();
         this.moveBackground();
 
-        if(this.updateCount >= 70) {
-            this.removeFish();
+        if(this.updateCount >= 50) {
+            this.fishDirection();
             this.spawnGoodFish();
             this.spawnBadFish();
             //this.spwnFish();
@@ -201,18 +209,78 @@ public class GameEngine extends SurfaceView implements Runnable {
             this.bgMoveCounter = bgMoveCounter - 1;
         }
         this.reachTop();
+        if (this.bgMoveCounter <= 1){
+            this.bgMoveSpeed = 0;
+        }
         System.out.println("BGMove Counter :" +this.bgMoveCounter);
         System.out.println("Update count :" +this.updateCount);
     }
 
-    public void moveFishes(){
+    public void moveFishesLeft() {
         if (this.goodFishesArray.size() != 0) {
             for (int i = 0; i < goodFishesArray.size(); i++) {
                 Fish currentGoodFish = this.goodFishesArray.get(i);
                 if (currentGoodFish.getFishStatus() != "caught") {
-                    currentGoodFish.setxPosition(currentGoodFish.getxPosition() - 20);
+                    if (currentGoodFish.getxPosition() > 0)
+                        currentGoodFish.setxPosition(currentGoodFish.getxPosition() - 20);
                     currentGoodFish.setyPosition(currentGoodFish.getyPosition() - this.bgMoveSpeed);
+
                 }
+                if (currentGoodFish.getFishStatus() == "caught") {
+                    currentGoodFish.setxPosition(this.hook.getxPosition());
+                    currentGoodFish.setyPosition(this.hook.getyPosition());
+                }
+//                if (this.goodFishesArray.get(i).getxPosition() <= (0 - this.goodFishesArray.get(i).getImage().getWidth())) {
+//                    currentGoodFish.setxPosition(this.screenWidth);
+//                }
+                this.goodFishesArray.get(i).updateHitBox();
+            }
+        }
+        if (this.badFishesArray.size() != 0) {
+            for (int i = 0; i < badFishesArray.size(); i++) {
+                Fish currentbadfish = this.badFishesArray.get(i);
+                if (currentbadfish.getFishStatus() != "caught") {
+                    if (currentbadfish.getxPosition() > 0) {
+                        currentbadfish.setxPosition(currentbadfish.getxPosition() - 20);
+                        currentbadfish.setyPosition(currentbadfish.getyPosition() - bgMoveSpeed);
+                    }
+                    if (currentbadfish.getFishStatus() == "caught") {
+                        currentbadfish.setxPosition(this.hook.getxPosition());
+                        currentbadfish.setyPosition(this.hook.getyPosition());
+                    }
+                    if (this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth())) {
+                        currentbadfish.setxPosition(this.screenWidth);
+                    }
+
+                    this.badFishesArray.get(i).updateHitBox();
+                }
+            }
+            if (this.rarefishesArray.size() != 0) {
+                for (int i = 0; i < this.rarefishesArray.size(); i++) {
+                    Fish currentRareFish = this.rarefishesArray.get(i);
+                    if (currentRareFish.getFishStatus() == "rareCaught") {
+                        currentRareFish.setxPosition(this.hook.getxPosition());
+                        currentRareFish.setyPosition(this.hook.getyPosition());
+                    } else {
+                        currentRareFish.setxPosition(currentRareFish.getxPosition() - this.badFishMoveSpeed);
+                        currentRareFish.setyPosition(currentRareFish.getyPosition() - bgMoveSpeed);
+                    }
+                }
+            }
+        }
+    }
+
+    public void moveFishesRight(){
+        if (this.goodFishesArray.size() != 0) {
+            for (int i = 0; i < goodFishesArray.size(); i++) {
+                Fish currentGoodFish = this.goodFishesArray.get(i);
+                if (currentGoodFish.getFishStatus() != "caught") {
+                    if (currentGoodFish.getxPosition() < this.screenWidth){
+                        currentGoodFish.setxPosition(currentGoodFish.getxPosition() + 20);
+                        currentGoodFish.setyPosition(currentGoodFish.getyPosition() - this.bgMoveSpeed);
+                    }
+                }
+
                 if (currentGoodFish.getFishStatus() == "caught"){
                     currentGoodFish.setxPosition(this.hook.getxPosition());
                     currentGoodFish.setyPosition(this.hook.getyPosition());
@@ -227,9 +295,12 @@ public class GameEngine extends SurfaceView implements Runnable {
             for (int i = 0; i < badFishesArray.size(); i++) {
                 Fish currentbadfish = this.badFishesArray.get(i);
                 if (currentbadfish.getFishStatus() != "caught") {
-                    currentbadfish.setxPosition(currentbadfish.getxPosition() + 10);
-                    currentbadfish.setyPosition(currentbadfish.getyPosition() - bgMoveSpeed);
+                    if (currentbadfish.getxPosition() < this.screenWidth){
+                        currentbadfish.setxPosition(currentbadfish.getxPosition() + this.badFishMoveSpeed);
+                        currentbadfish.setyPosition(currentbadfish.getyPosition() - bgMoveSpeed);
+                    }
                 }
+
                 if (currentbadfish.getFishStatus() == "caught"){
                     currentbadfish.setxPosition(this.hook.getxPosition());
                     currentbadfish.setyPosition(this.hook.getyPosition());
@@ -249,7 +320,7 @@ public class GameEngine extends SurfaceView implements Runnable {
                     currentRareFish.setyPosition(this.hook.getyPosition());
                 }
                 else{
-                    currentRareFish.setxPosition(currentRareFish.getxPosition() - 10);
+                    currentRareFish.setxPosition(currentRareFish.getxPosition() - this.badFishMoveSpeed);
                     currentRareFish.setyPosition(currentRareFish.getyPosition() - bgMoveSpeed);
                 }
             }
@@ -350,11 +421,11 @@ public void spawnBadFish(){
     if (this.updateCount%60 == 0){
         for (int i = 0;i<2;i++){
             if (i == 0) {
-                this.badFishesArray.add(new Fish(this.getContext(), 0 - 100, this.screenHeight - 500, R.drawable.fish3));
+                this.badFishesArray.add(new Fish(this.getContext(), this.screenWidth, this.screenHeight - 500, R.drawable.fish33));
             }
             else{
                 Fish prevFish = this.badFishesArray.get(i-1);
-                this.badFishesArray.add(new Fish(this.getContext(),this.screenWidth,prevFish.getyPosition() - prevFish.getImage().getHeight()*4,R.drawable.fish3));
+                this.badFishesArray.add(new Fish(this.getContext(),this.screenWidth,prevFish.getyPosition() - prevFish.getImage().getHeight()*4,R.drawable.fish33));
             }
         }
     }
@@ -371,18 +442,20 @@ public void spawnBadFish(){
     }
 
 
-    public void removeFish(){
-        //remove fish after it hits edges
+    public void fishDirection(){
         for (int i = 0;i < this.goodFishesArray.size();i++) {
-            if (this.goodFishesArray.get(i).getyPosition() <= (0 - this.goodFishesArray.get(i).getImage().getHeight())){
-//            ||(this.goodFishesArray.get(i).getxPosition() <= (0 - this.goodFishesArray.get(i).getImage().getWidth()))){
-                this.goodFishesArray.remove(i);
+            Fish goodFish = this.goodFishesArray.get(i);
+            if //(this.goodFishesArray.get(i).getyPosition() <= (0 - this.goodFishesArray.get(i).getImage().getHeight())){
+            (goodFish.getxPosition() < (0)){
+                //this.goodFishesArray.remove(i);
+                goodFish.setImage(Bitmap.createScaledBitmap(goodFish.getImage(), -goodFish.getImage().getWidth(), goodFish.getImage().getHeight(), false));
+                this.fishDirection = "right";
             }
-        }
-        for (int i = 0;i < this.badFishesArray.size();i++) {
-            if (this.badFishesArray.get(i).getyPosition() <= (0 - this.badFishesArray.get(i).getImage().getHeight())){
-//                ||(this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth()))) {
-                this.badFishesArray.remove(i);
+            if //(this.goodFishesArray.get(i).getyPosition() <= (0 - this.goodFishesArray.get(i).getImage().getHeight())){
+            (goodFish.getxPosition() > this.screenWidth){
+                //this.goodFishesArray.remove(i);
+                goodFish.setImage(Bitmap.createScaledBitmap(goodFish.getImage(),goodFish.getImage().getWidth(), goodFish.getImage().getHeight(), false));
+                this.fishDirection = "left";
             }
         }
 
