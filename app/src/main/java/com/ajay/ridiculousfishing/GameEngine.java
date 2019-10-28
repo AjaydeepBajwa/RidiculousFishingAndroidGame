@@ -211,7 +211,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         if (this.bgMoveCounter <= 1){
             this.bgMoveSpeed = 0;
             this.lineEndY = -10;
-            this.hook.setyPosition(-200);
+            this.hook.setyPosition(-800);
             this.background.setImagePath(R.drawable.bg_sky);
             this.background.setImage(BitmapFactory.decodeResource(this.getContext().getResources(),R.drawable.bg_sky));
             this.background.setImage(Bitmap.createScaledBitmap(this.background.getImage(), this.screenWidth, this.screenHeight*2, false));
@@ -459,6 +459,12 @@ public class GameEngine extends SurfaceView implements Runnable {
             if (this.badFishesArray.get(i).getyPosition() <= (0 - this.badFishesArray.get(i).getImage().getHeight())){
 //                ||(this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth()))) {
                 this.badFishesArray.remove(i);
+            }
+        }
+        for (int i = 0;i < this.rarefishesArray.size();i++) {
+            if (this.rarefishesArray.get(i).getyPosition() <= (0 - this.rarefishesArray.get(i).getImage().getHeight())){
+//                ||(this.badFishesArray.get(i).getxPosition() <= (0 - this.badFishesArray.get(i).getImage().getWidth()))) {
+                this.rarefishesArray.remove(i);
             }
         }
 
